@@ -7,6 +7,7 @@ from .dashboard_widget import DashboardWidget
 from .barcode_dialog import BarcodeDialog
 from .stock_adjustment_dialog import StockAdjustmentDialog
 from .product_details_dialog import ProductDetailsDialog
+from .settings_dialog import SettingsDialog
 import json
 
 class StockWidget(QWidget):
@@ -35,6 +36,21 @@ class StockWidget(QWidget):
 
         self.barcode_btn = QPushButton("Générer Code-Barres")
         self.toolbar.addWidget(self.barcode_btn)
+
+        self.settings_btn = QPushButton("Réglages Module")
+        self.toolbar.addWidget(self.settings_btn)
+
+        self.categories_btn = QPushButton("Catégories")
+        self.toolbar.addWidget(self.categories_btn)
+
+        self.suppliers_btn = QPushButton("Fournisseurs")
+        self.toolbar.addWidget(self.suppliers_btn)
+
+        self.alerts_btn = QPushButton("Alertes Stock")
+        self.toolbar.addWidget(self.alerts_btn)
+
+        self.print_btn = QPushButton("Imprimer Étiquettes")
+        self.toolbar.addWidget(self.print_btn)
 
         self.import_csv_btn = QPushButton("Importer CSV")
         self.toolbar.addWidget(self.import_csv_btn)
@@ -95,6 +111,11 @@ class StockWidget(QWidget):
         self.adjust_btn.clicked.connect(self.adjust_stock)
         self.details_btn.clicked.connect(self.view_details)
         self.barcode_btn.clicked.connect(self.generate_barcode)
+        self.settings_btn.clicked.connect(self.open_settings)
+        self.categories_btn.clicked.connect(self.manage_categories)
+        self.suppliers_btn.clicked.connect(self.manage_suppliers)
+        self.alerts_btn.clicked.connect(self.show_alerts)
+        self.print_btn.clicked.connect(self.print_labels)
         self.import_csv_btn.clicked.connect(self.import_csv)
         self.export_json_btn.clicked.connect(self.export_json)
         self.export_csv_btn.clicked.connect(self.export_csv)
@@ -249,3 +270,19 @@ class StockWidget(QWidget):
                 QMessageBox.information(self, "Succès", "Export réussi")
             except Exception as e:
                 QMessageBox.warning(self, "Erreur", f"Erreur lors de l'export: {str(e)}")
+
+    def open_settings(self):
+        dialog = SettingsDialog(self)
+        dialog.exec()
+
+    def manage_categories(self):
+        QMessageBox.information(self, "Info", "Gestion catégories - à implémenter")
+
+    def manage_suppliers(self):
+        QMessageBox.information(self, "Info", "Gestion fournisseurs - à implémenter")
+
+    def show_alerts(self):
+        QMessageBox.information(self, "Info", "Alertes stock - à implémenter")
+
+    def print_labels(self):
+        QMessageBox.information(self, "Info", "Impression étiquettes - à implémenter")
