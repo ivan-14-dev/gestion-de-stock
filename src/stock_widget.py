@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, Q
 from PySide6.QtCore import Qt
 from .models import products, categories, suppliers
 from .storage import load_data, save_data
+from .add_product_dialog import AddProductDialog
 
 class StockWidget(QWidget):
     def __init__(self):
@@ -54,6 +55,7 @@ class StockWidget(QWidget):
         self.refresh_table()
 
         # Connect signals
+        self.add_btn.clicked.connect(self.add_product)
         self.refresh_btn.clicked.connect(self.refresh_table)
         self.search_input.textChanged.connect(self.filter_table)
         self.category_filter.currentIndexChanged.connect(self.filter_table)
@@ -105,3 +107,8 @@ class StockWidget(QWidget):
             if sup_filter != "Tous fournisseurs" and self.table.item(row, 3).text() != sup_filter:
                 show = False
             self.table.setRowHidden(row, not show)
+
+    def add_product(self):
+        dialog = AddProductDialog(self)
+        if dialog.exec():
+            self.refresh_table()
