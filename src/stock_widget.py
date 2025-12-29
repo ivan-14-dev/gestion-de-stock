@@ -10,6 +10,7 @@ from .product_details_dialog import ProductDetailsDialog
 from .settings_dialog import SettingsDialog
 from .categories_dialog import CategoriesDialog
 from .suppliers_dialog import SuppliersDialog
+from .alerts_dialog import AlertsDialog
 import json
 
 class StockWidget(QWidget):
@@ -288,7 +289,8 @@ class StockWidget(QWidget):
         self.refresh_table()  # Update filters
 
     def show_alerts(self):
-        QMessageBox.information(self, "Info", "Alertes stock - à implémenter")
+        dialog = AlertsDialog(self)
+        dialog.exec()
 
     def print_labels(self):
         QMessageBox.information(self, "Info", "Impression étiquettes - à implémenter")
