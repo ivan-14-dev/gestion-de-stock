@@ -18,6 +18,21 @@ class StockWidget(QWidget):
         self.add_btn = QPushButton("Ajouter Produit")
         self.toolbar.addWidget(self.add_btn)
 
+        self.edit_btn = QPushButton("Modifier")
+        self.toolbar.addWidget(self.edit_btn)
+
+        self.delete_btn = QPushButton("Supprimer")
+        self.toolbar.addWidget(self.delete_btn)
+
+        self.adjust_btn = QPushButton("Ajuster Stock")
+        self.toolbar.addWidget(self.adjust_btn)
+
+        self.details_btn = QPushButton("Voir Détails")
+        self.toolbar.addWidget(self.details_btn)
+
+        self.barcode_btn = QPushButton("Générer Code-Barres")
+        self.toolbar.addWidget(self.barcode_btn)
+
         self.import_csv_btn = QPushButton("Importer CSV")
         self.toolbar.addWidget(self.import_csv_btn)
 
@@ -72,6 +87,11 @@ class StockWidget(QWidget):
 
         # Connect signals
         self.add_btn.clicked.connect(self.add_product)
+        self.edit_btn.clicked.connect(self.edit_product)
+        self.delete_btn.clicked.connect(self.delete_product)
+        self.adjust_btn.clicked.connect(self.adjust_stock)
+        self.details_btn.clicked.connect(self.view_details)
+        self.barcode_btn.clicked.connect(self.generate_barcode)
         self.import_csv_btn.clicked.connect(self.import_csv)
         self.export_json_btn.clicked.connect(self.export_json)
         self.export_csv_btn.clicked.connect(self.export_csv)
@@ -134,6 +154,43 @@ class StockWidget(QWidget):
         dialog = AddProductDialog(self)
         if dialog.exec():
             self.refresh_table()
+
+    def edit_product(self):
+        selected = self.table.selectedItems()
+        if not selected:
+            QMessageBox.warning(self, "Erreur", "Sélectionnez un produit")
+            return
+        row = selected[0].row()
+        ref = self.table.item(row, 0).text()
+        product = next((p for p in products if p.reference == ref), None)
+        if product:
+            dialog = AddProductDialog(self, product)
+            if dialog.exec():
+                self.refresh_table()
+
+    def delete_product(self):
+        selected = self.table.selectedItems()
+        if not selected:
+            QMessageBox.warning(self, "Erreur", "Sélectionnez un produit")
+            return
+        row = selected[0].row()
+        ref = self.table.item(row, 0).text()
+        product = next((p for p in products if p.reference == ref), None)
+        if product:
+            reply = QMessageBox.question(self, "Confirmer", f"Supprimer {product.name}?", QMessageBox.Yes | QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                products.remove(product)
+                save_data()
+                self.refresh_table()
+
+    def adjust_stock(self):
+        QMessageBox.information(self, "Info", "Ajustement stock - à implémenter")
+
+    def view_details(self):
+        QMessageBox.information(self, "Info", "Détails produit - à implémenter")
+
+    def generate_barcode(self):
+        QMessageBox.information(self, "Info", "Génération code-barres - à implémenter")
 
     def import_csv(self):
         file, _ = QFileDialog.getOpenFileName(self, "Importer CSV", "", "CSV (*.csv)")

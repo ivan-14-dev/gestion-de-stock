@@ -1,8 +1,19 @@
 PySide6==6.10.1
-pandas==2.2.0
+
+# Data & analytics (STABLE Windows)
+pandas==2.1.4
+numpy==1.26.4
 matplotlib==3.8.0
+
+# Génération & médias
 python-barcode==0.15.1
 Pillow==10.2.0
-firebase-admin==6.5.0
-openpyxl==3.1.2
 reportlab==4.1.0
+qrcode==7.4.2
+
+# Excel
+openpyxl==3.1.2
+
+# Cloud / Firebase
+firebase-admin==6.5.0
+google-cloud-firestore==2.11.3

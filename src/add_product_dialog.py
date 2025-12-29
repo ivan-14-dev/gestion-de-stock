@@ -5,9 +5,10 @@ from .storage import save_data
 import uuid
 
 class AddProductDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, product=None):
         super().__init__(parent)
-        self.setWindowTitle("Ajouter Produit")
+        self.product = product
+        self.setWindowTitle("Modifier Produit" if product else "Ajouter Produit")
         self.setModal(True)
         layout = QVBoxLayout(self)
 
@@ -82,7 +83,7 @@ class AddProductDialog(QDialog):
 
         # Buttons
         btn_layout = QHBoxLayout()
-        self.ok_btn = QPushButton("Ajouter")
+        self.ok_btn = QPushButton("Modifier" if self.product else "Ajouter")
         self.ok_btn.clicked.connect(self.accept_product)
         btn_layout.addWidget(self.ok_btn)
         self.cancel_btn = QPushButton("Annuler")
@@ -91,6 +92,27 @@ class AddProductDialog(QDialog):
         layout.addLayout(btn_layout)
 
         self.photo_path = ""
+
+        # Prefill if editing
+        if self.product:
+            self.ref_input.setText(self.product.reference)
+            self.name_input.setText(self.product.name)
+            cat_index = self.cat_combo.findData(self.product.category_id)
+            if cat_index >= 0:
+                self.cat_combo.setCurrentIndex(cat_index)
+            sup_index = self.sup_combo.findData(self.product.supplier_id)
+            if sup_index >= 0:
+                self.sup_combo.setCurrentIndex(sup_index)
+            self.price_input.setText(str(self.product.price))
+            if self.product.variants:
+                v = self.product.variants[0]
+                self.size_input.setText(v.size)
+                self.color_input.setText(v.color)
+                self.qty_input.setText(str(v.quantity))
+            self.desc_input.setText(self.product.description)
+            if self.product.photos:
+                self.photo_path = self.product.photos[0]
+                self.photo_label.setText(self.photo_path.split('/')[-1])
 
     def select_photo(self):
         file, _ = QFileDialog.getOpenFileName(self, "Sélectionner Photo", "", "Images (*.png *.jpg *.jpeg)")
@@ -114,20 +136,33 @@ class AddProductDialog(QDialog):
                 QMessageBox.warning(self, "Erreur", "Référence et nom requis")
                 return
 
-            prod_id = len(products) + 1
-            variant = Variant(size=size, color=color, quantity=qty, sku=f"{ref}-{size}-{color}")
-            prod = Product(
-                id=prod_id,
-                reference=ref,
-                name=name,
-                category_id=cat_id,
-                supplier_id=sup_id,
-                price=price,
-                variants=[variant],
-                photos=[self.photo_path] if self.photo_path else [],
-                description=desc
-            )
-            products.append(prod)
+            if self.product:
+                # Update existing
+                self.product.reference = ref
+                self.product.name = name
+                self.product.category_id = cat_id
+                self.product.supplier_id = sup_id
+                self.product.price = price
+                self.product.variants = [Variant(size=size, color=color, quantity=qty, sku=f"{ref}-{size}-{color}")]
+                self.product.photos = [self.photo_path] if self.photo_path else []
+                self.product.description = desc
+                self.product.updated_at = datetime.now()
+            else:
+                # Add new
+                prod_id = max((p.id for p in products), default=0) + 1
+                variant = Variant(size=size, color=color, quantity=qty, sku=f"{ref}-{size}-{color}")
+                prod = Product(
+                    id=prod_id,
+                    reference=ref,
+                    name=name,
+                    category_id=cat_id,
+                    supplier_id=sup_id,
+                    price=price,
+                    variants=[variant],
+                    photos=[self.photo_path] if self.photo_path else [],
+                    description=desc
+                )
+                products.append(prod)
             save_data()
             self.accept()
         except ValueError:
