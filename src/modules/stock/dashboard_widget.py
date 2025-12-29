@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGridLayout
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGridLayout, QVBoxLayout as QVLayout
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from collections import defaultdict
@@ -89,28 +89,64 @@ class DashboardWidget(QWidget):
 
         # Charts
         charts_layout = QGridLayout()
+        charts_layout.setSpacing(30)  # Add space between charts
         layout.addLayout(charts_layout)
 
+        # Pie chart with toolbar
+        pie_layout = QVLayout()
         self.pie_canvas = FigureCanvas(Figure())
-        charts_layout.addWidget(self.pie_canvas, 0, 0)
+        pie_toolbar = NavigationToolbar(self.pie_canvas, self)
+        pie_layout.addWidget(self.pie_canvas)
+        pie_layout.addWidget(pie_toolbar)
+        charts_layout.addLayout(pie_layout, 0, 0)
 
+        # Bar chart with toolbar
+        bar_layout = QVLayout()
         self.bar_canvas = FigureCanvas(Figure())
-        charts_layout.addWidget(self.bar_canvas, 0, 1)
+        bar_toolbar = NavigationToolbar(self.bar_canvas, self)
+        bar_layout.addWidget(self.bar_canvas)
+        bar_layout.addWidget(bar_toolbar)
+        charts_layout.addLayout(bar_layout, 0, 1)
 
+        # Line chart with toolbar
+        line_layout = QVLayout()
         self.line_canvas = FigureCanvas(Figure())
-        charts_layout.addWidget(self.line_canvas, 1, 0)
+        line_toolbar = NavigationToolbar(self.line_canvas, self)
+        line_layout.addWidget(self.line_canvas)
+        line_layout.addWidget(line_toolbar)
+        charts_layout.addLayout(line_layout, 1, 0)
 
+        # Heatmap with toolbar
+        heatmap_layout = QVLayout()
         self.heatmap_canvas = FigureCanvas(Figure())
-        charts_layout.addWidget(self.heatmap_canvas, 1, 1)
+        heatmap_toolbar = NavigationToolbar(self.heatmap_canvas, self)
+        heatmap_layout.addWidget(self.heatmap_canvas)
+        heatmap_layout.addWidget(heatmap_toolbar)
+        charts_layout.addLayout(heatmap_layout, 1, 1)
 
+        # Doughnut chart with toolbar
+        doughnut_layout = QVLayout()
         self.doughnut_canvas = FigureCanvas(Figure())
-        charts_layout.addWidget(self.doughnut_canvas, 2, 0)
+        doughnut_toolbar = NavigationToolbar(self.doughnut_canvas, self)
+        doughnut_layout.addWidget(self.doughnut_canvas)
+        doughnut_layout.addWidget(doughnut_toolbar)
+        charts_layout.addLayout(doughnut_layout, 2, 0)
 
+        # Horizontal bar chart with toolbar
+        hbar_layout = QVLayout()
         self.hbar_canvas = FigureCanvas(Figure())
-        charts_layout.addWidget(self.hbar_canvas, 2, 1)
+        hbar_toolbar = NavigationToolbar(self.hbar_canvas, self)
+        hbar_layout.addWidget(self.hbar_canvas)
+        hbar_layout.addWidget(hbar_toolbar)
+        charts_layout.addLayout(hbar_layout, 2, 1)
 
+        # Timeline with toolbar
+        timeline_layout = QVLayout()
         self.timeline_canvas = FigureCanvas(Figure())
-        charts_layout.addWidget(self.timeline_canvas, 3, 0, 1, 2)
+        timeline_toolbar = NavigationToolbar(self.timeline_canvas, self)
+        timeline_layout.addWidget(self.timeline_canvas)
+        timeline_layout.addWidget(timeline_toolbar)
+        charts_layout.addLayout(timeline_layout, 3, 0, 1, 2)
 
         self.update_dashboard()
 
