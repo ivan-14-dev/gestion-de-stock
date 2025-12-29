@@ -6,6 +6,7 @@ from .add_product_dialog import AddProductDialog
 from .dashboard_widget import DashboardWidget
 from .barcode_dialog import BarcodeDialog
 from .stock_adjustment_dialog import StockAdjustmentDialog
+from .product_details_dialog import ProductDetailsDialog
 import json
 
 class StockWidget(QWidget):
@@ -191,7 +192,16 @@ class StockWidget(QWidget):
             self.refresh_table()
 
     def view_details(self):
-        QMessageBox.information(self, "Info", "Détails produit - à implémenter")
+        selected = self.table.selectedItems()
+        if not selected:
+            QMessageBox.warning(self, "Erreur", "Sélectionnez un produit")
+            return
+        row = selected[0].row()
+        ref = self.table.item(row, 0).text()
+        product = next((p for p in products if p.reference == ref), None)
+        if product:
+            dialog = ProductDetailsDialog(product, self)
+            dialog.exec()
 
     def generate_barcode(self):
         selected = self.table.selectedItems()
