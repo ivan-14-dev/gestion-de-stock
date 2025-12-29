@@ -1,6 +1,7 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSplitter
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import Qt
+from .stock_widget import StockWidget
 
 class Sidebar(QWidget):
     def __init__(self, parent=None):
@@ -51,7 +52,8 @@ class MainWindow(QMainWindow):
             self.content_layout.itemAt(i).widget().setParent(None)
 
         if module == "Gestion de Stock":
-            self.content_layout.addWidget(QLabel("Module Gestion de Stock - En développement"))
+            self.stock_widget = StockWidget()
+            self.content_layout.addWidget(self.stock_widget)
         else:
             self.content_layout.addWidget(QLabel(f"Module {module} - En développement"))
 
