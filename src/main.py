@@ -1,7 +1,8 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from .stock_widget import StockWidget
+from .storage import save_data
 
 class Sidebar(QWidget):
     def __init__(self, parent=None):
@@ -45,6 +46,11 @@ class MainWindow(QMainWindow):
         self.content_layout = QVBoxLayout(self.content_area)
         self.content_layout.addWidget(QLabel("Sélectionnez un module dans la sidebar"))
         main_layout.addWidget(self.content_area)
+
+        # Automatic backup timer (every 5 minutes)
+        self.backup_timer = QTimer(self)
+        self.backup_timer.timeout.connect(save_data)
+        self.backup_timer.start(5 * 60 * 1000)  # 5 minutes in milliseconds
 
     def switch_module(self, module):
         # Clear current content
