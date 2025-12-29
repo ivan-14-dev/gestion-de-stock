@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QPushButton
-from .models import products, categories, suppliers
+from ....common.models import products, categories, suppliers
 from .settings_dialog import SETTINGS_FILE
 import json
 import os

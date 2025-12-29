@@ -5,6 +5,43 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from ...common.models import products, categories, suppliers, movements
 
+# Apply very modern SaaS chart styling
+plt.style.use('seaborn-v0_8-whitegrid')
+plt.rcParams.update({
+    'figure.facecolor': '#F9FAFB',
+    'axes.facecolor': '#FFFFFF',
+    'axes.edgecolor': '#E5E7EB',
+    'axes.labelcolor': '#374151',
+    'text.color': '#111827',
+    'xtick.color': '#6B7280',
+    'ytick.color': '#6B7280',
+    'grid.color': '#F3F4F6',
+    'grid.alpha': 0.4,
+    'grid.linewidth': 0.8,
+    'lines.linewidth': 3,
+    'lines.markersize': 8,
+    'lines.marker': 'o',
+    'lines.markeredgecolor': '#2563EB',
+    'lines.markerfacecolor': '#FFFFFF',
+    'lines.markeredgewidth': 2.5,
+    'axes.prop_cycle': plt.cycler(color=['#2563EB', '#6B7280', '#22C55E', '#F59E0B', '#EF4444']),
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Inter', 'Roboto', 'DejaVu Sans'],
+    'font.size': 11,
+    'axes.titlesize': 14,
+    'axes.titleweight': '700',
+    'axes.labelsize': 11,
+    'xtick.labelsize': 10,
+    'ytick.labelsize': 10,
+    'legend.fontsize': 10,
+    'figure.titlesize': 16,
+    'figure.titleweight': '700',
+    'axes.spines.top': False,
+    'axes.spines.right': False,
+    'axes.spines.bottom': True,
+    'axes.spines.left': True,
+})
+
 class DashboardWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -15,15 +52,39 @@ class DashboardWidget(QWidget):
         layout.addLayout(cards_layout)
 
         self.total_value_label = QLabel("Valeur totale: 0 €")
-        self.total_value_label.setStyleSheet("border: 1px solid black; padding: 10px;")
+        self.total_value_label.setStyleSheet("""
+            background-color: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        """)
         cards_layout.addWidget(self.total_value_label)
 
         self.product_count_label = QLabel("Nombre produits: 0")
-        self.product_count_label.setStyleSheet("border: 1px solid black; padding: 10px;")
+        self.product_count_label.setStyleSheet("""
+            background-color: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        """)
         cards_layout.addWidget(self.product_count_label)
 
         self.low_stock_label = QLabel("Stock faible: 0")
-        self.low_stock_label.setStyleSheet("border: 1px solid black; padding: 10px;")
+        self.low_stock_label.setStyleSheet("""
+            background-color: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        """)
         cards_layout.addWidget(self.low_stock_label)
 
         # Charts
@@ -73,8 +134,9 @@ class DashboardWidget(QWidget):
         self.pie_canvas.figure.clear()
         ax = self.pie_canvas.figure.add_subplot(111)
         if cat_stock:
-            ax.pie(cat_stock.values(), labels=cat_stock.keys(), autopct='%1.1f%%')
-        ax.set_title("Stock par catégorie")
+            colors = ['#2563EB', '#6B7280', '#22C55E', '#F59E0B', '#EF4444'][:len(cat_stock)]
+            ax.pie(cat_stock.values(), labels=cat_stock.keys(), autopct='%1.1f%%', colors=colors, startangle=90, wedgeprops={'edgecolor': '#FFFFFF', 'linewidth': 2})
+        ax.set_title("Stock par catégorie", pad=20)
         self.pie_canvas.draw()
 
         # Bar chart: stock by color (top 10)
@@ -88,8 +150,9 @@ class DashboardWidget(QWidget):
 
         self.bar_canvas.figure.clear()
         ax = self.bar_canvas.figure.add_subplot(111)
-        ax.bar(colors, qtys)
-        ax.set_title("Stock par couleur (top 10)")
+        ax.bar(colors, qtys, color='#2563EB', edgecolor='#FFFFFF', linewidth=1, width=0.8)
+        ax.set_title("Stock par couleur (top 10)", pad=20)
+        ax.grid(True, axis='y', alpha=0.3)
         self.bar_canvas.draw()
 
         # Line chart: stock evolution (simplified, assume daily totals from movements)
@@ -108,8 +171,9 @@ class DashboardWidget(QWidget):
         self.line_canvas.figure.clear()
         ax = self.line_canvas.figure.add_subplot(111)
         if dates:
-            ax.plot(dates, totals)
-        ax.set_title("Évolution stock")
+            ax.plot(dates, totals, marker='o', markersize=6, markerfacecolor='#FFFFFF', markeredgecolor='#2563EB', markeredgewidth=2, linewidth=2.5, color='#2563EB')
+        ax.set_title("Évolution stock", pad=20)
+        ax.grid(True, alpha=0.3)
         self.line_canvas.draw()
 
         # Heatmap: size vs color
@@ -153,10 +217,11 @@ class DashboardWidget(QWidget):
         self.doughnut_canvas.figure.clear()
         ax = self.doughnut_canvas.figure.add_subplot(111)
         if sup_stock:
-            wedges, texts, autotexts = ax.pie(sup_stock.values(), labels=sup_stock.keys(), autopct='%1.1f%%', pctdistance=0.85)
-            centre_circle = plt.Circle((0,0),0.70,fc='white')
+            colors = ['#2563EB', '#6B7280', '#22C55E', '#F59E0B', '#EF4444'][:len(sup_stock)]
+            wedges, texts, autotexts = ax.pie(sup_stock.values(), labels=sup_stock.keys(), autopct='%1.1f%%', colors=colors, pctdistance=0.85, startangle=90, wedgeprops={'edgecolor': '#FFFFFF', 'linewidth': 2})
+            centre_circle = plt.Circle((0,0),0.70,fc='#F9FAFB')
             ax.add_artist(centre_circle)
-        ax.set_title("Stock par fournisseur (doughnut)")
+        ax.set_title("Stock par fournisseur (doughnut)", pad=20)
         self.doughnut_canvas.draw()
 
         # Horizontal bar chart: top stocked products
@@ -167,8 +232,9 @@ class DashboardWidget(QWidget):
 
         self.hbar_canvas.figure.clear()
         ax = self.hbar_canvas.figure.add_subplot(111)
-        ax.barh(names, qtys)
-        ax.set_title("Top produits stockés")
+        ax.barh(names, qtys, color='#2563EB', edgecolor='#FFFFFF', linewidth=1, height=0.8)
+        ax.set_title("Top produits stockés", pad=20)
+        ax.grid(True, axis='x', alpha=0.3)
         self.hbar_canvas.draw()
 
         # Timeline: recent movements
@@ -179,6 +245,7 @@ class DashboardWidget(QWidget):
 
         self.timeline_canvas.figure.clear()
         ax = self.timeline_canvas.figure.add_subplot(111)
-        ax.plot(dates, qtys, marker='o')
-        ax.set_title("Timeline mouvements récents")
+        ax.plot(dates, qtys, marker='o', markersize=6, markerfacecolor='#FFFFFF', markeredgecolor='#2563EB', markeredgewidth=2, linewidth=2.5, color='#2563EB')
+        ax.set_title("Timeline mouvements récents", pad=20)
+        ax.grid(True, alpha=0.3)
         self.timeline_canvas.draw()

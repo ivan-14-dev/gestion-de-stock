@@ -2,7 +2,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from PySide6.QtWidgets import QFileDialog, QMessageBox
-from .models import products
+from ..models import products
 
 def print_labels():
     selected = []  # For simplicity, print all products, or modify to select
