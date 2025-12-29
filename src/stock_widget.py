@@ -11,6 +11,7 @@ from .settings_dialog import SettingsDialog
 from .categories_dialog import CategoriesDialog
 from .suppliers_dialog import SuppliersDialog
 from .alerts_dialog import AlertsDialog
+from .print_labels import print_labels
 import json
 
 class StockWidget(QWidget):
@@ -293,4 +294,4 @@ class StockWidget(QWidget):
         dialog.exec()
 
     def print_labels(self):
-        QMessageBox.information(self, "Info", "Impression étiquettes - à implémenter")
+        print_labels()
