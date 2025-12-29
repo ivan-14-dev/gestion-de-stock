@@ -3,8 +3,21 @@ import os
 import pandas as pd
 from .models import categories, suppliers, products, movements, Category, Supplier, Product, Movement, Variant
 from datetime import datetime
+import firebase_admin
+from firebase_admin import credentials, db
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
+
+# Firebase initialization (basic setup - replace with actual credentials)
+try:
+    cred = credentials.Certificate('firebase-service-account.json')  # Place this file in the project root
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://your-project-id.firebaseio.com/'  # Replace with actual URL
+    })
+    firebase_enabled = True
+except Exception as e:
+    print(f"Firebase not configured: {e}")
+    firebase_enabled = False
 
 def ensure_data_dir():
     if not os.path.exists(DATA_DIR):
@@ -52,6 +65,22 @@ def load_data():
                 item['date'] = datetime.fromisoformat(item['date'])
                 movements.append(Movement(**item))
 
+def upload_to_firebase():
+   if not firebase_enabled:
+       return
+   try:
+       data = {
+           'categories': [cat.__dict__ for cat in categories],
+           'suppliers': [sup.__dict__ for sup in suppliers],
+           'products': [prod.__dict__ for prod in products],
+           'movements': [mov.__dict__ for mov in movements]
+       }
+       ref = db.reference('/')
+       ref.set(data)
+       print("Data uploaded to Firebase successfully")
+   except Exception as e:
+       print(f"Failed to upload to Firebase: {e}")
+
 def save_data():
     ensure_data_dir()
     # Save categories
@@ -75,6 +104,8 @@ def save_data():
             d['variants'] = [v.__dict__ for v in d['variants']]
             data.append(d)
         json.dump(data, f, indent=4)
+
+    upload_to_firebase()
 
     # Save movements
     mov_file = os.path.join(DATA_DIR, 'movements.json')
