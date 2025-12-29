@@ -22,7 +22,7 @@ Une plateforme professionnelle tout-en-un pour gérer un magasin de vêtements, 
 - Upload de photos
 - Recherche et filtres avancés
 - Import/Export CSV et JSON
-- Dashboard avec graphiques stylisés (pie, bar, line, heatmap, doughnut, horizontal bar, timeline)
+- Dashboard avec graphiques interactifs Plotly (pie, bar, line, heatmap, doughnut, horizontal bar, timeline) avec zoom, pan et sélection
 - Table de produits avec colonnes personnalisables
 - Cartes de résumé avec indicateurs clés
 - Alertes de stock faible
@@ -79,7 +79,7 @@ python src/main.py
 
 - PySide6 (Qt pour Python)
 - Pandas (manipulation CSV)
-- Matplotlib + Seaborn (graphiques stylisés)
+- Plotly (graphiques interactifs)
 - JSON pour stockage local
 
 ## Développement Futur
