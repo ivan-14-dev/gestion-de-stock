@@ -8,6 +8,7 @@ from .barcode_dialog import BarcodeDialog
 from .stock_adjustment_dialog import StockAdjustmentDialog
 from .product_details_dialog import ProductDetailsDialog
 from .settings_dialog import SettingsDialog
+from .categories_dialog import CategoriesDialog
 import json
 
 class StockWidget(QWidget):
@@ -276,7 +277,9 @@ class StockWidget(QWidget):
         dialog.exec()
 
     def manage_categories(self):
-        QMessageBox.information(self, "Info", "Gestion catégories - à implémenter")
+        dialog = CategoriesDialog(self)
+        dialog.exec()
+        self.refresh_table()  # Update filters
 
     def manage_suppliers(self):
         QMessageBox.information(self, "Info", "Gestion fournisseurs - à implémenter")
