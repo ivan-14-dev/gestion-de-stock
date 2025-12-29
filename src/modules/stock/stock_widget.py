@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QPushButton, QLineEdit, QLabel, QComboBox, QTabWidget, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QPushButton, QLineEdit, QLabel, QComboBox, QTabWidget, QFileDialog, QMessageBox, QInputDialog
 from PySide6.QtCore import Qt
-from ...common.models import products, categories, suppliers
+from ...common.models import products, categories, suppliers, Category, Supplier
 from ...common.storage import load_data, save_data, export_csv, import_csv
 from .dialogs.add_product_dialog import AddProductDialog
 from .dashboard_widget import DashboardWidget
@@ -44,10 +44,16 @@ class StockWidget(QWidget):
         self.settings_btn = QPushButton("Réglages Module")
         self.toolbar.addWidget(self.settings_btn)
 
-        self.categories_btn = QPushButton("Catégories")
+        self.add_category_btn = QPushButton("Ajouter Catégorie")
+        self.toolbar.addWidget(self.add_category_btn)
+
+        self.add_supplier_btn = QPushButton("Ajouter Fournisseur")
+        self.toolbar.addWidget(self.add_supplier_btn)
+
+        self.categories_btn = QPushButton("Gérer Catégories")
         self.toolbar.addWidget(self.categories_btn)
 
-        self.suppliers_btn = QPushButton("Fournisseurs")
+        self.suppliers_btn = QPushButton("Gérer Fournisseurs")
         self.toolbar.addWidget(self.suppliers_btn)
 
         self.alerts_btn = QPushButton("Alertes Stock")
@@ -116,6 +122,8 @@ class StockWidget(QWidget):
         self.details_btn.clicked.connect(self.view_details)
         self.barcode_btn.clicked.connect(self.generate_barcode)
         self.settings_btn.clicked.connect(self.open_settings)
+        self.add_category_btn.clicked.connect(self.add_category)
+        self.add_supplier_btn.clicked.connect(self.add_supplier)
         self.categories_btn.clicked.connect(self.manage_categories)
         self.suppliers_btn.clicked.connect(self.manage_suppliers)
         self.alerts_btn.clicked.connect(self.show_alerts)
@@ -278,6 +286,22 @@ class StockWidget(QWidget):
     def open_settings(self):
         dialog = SettingsDialog(self)
         dialog.exec()
+
+    def add_category(self):
+        name, ok = QInputDialog.getText(self, "Ajouter Catégorie", "Nom de la catégorie:")
+        if ok and name.strip():
+            cat_id = max((c.id for c in categories), default=0) + 1
+            categories.append(Category(id=cat_id, name=name.strip()))
+            save_data()
+            self.refresh_table()
+
+    def add_supplier(self):
+        name, ok = QInputDialog.getText(self, "Ajouter Fournisseur", "Nom du fournisseur:")
+        if ok and name.strip():
+            sup_id = max((s.id for s in suppliers), default=0) + 1
+            suppliers.append(Supplier(id=sup_id, name=name.strip()))
+            save_data()
+            self.refresh_table()
 
     def manage_categories(self):
         dialog = CategoriesDialog(self)
