@@ -3,7 +3,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from collections import defaultdict
-from .models import products, categories, suppliers, movements
+from ...common.models import products, categories, suppliers, movements
 
 class DashboardWidget(QWidget):
     def __init__(self):

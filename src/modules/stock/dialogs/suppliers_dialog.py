@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QPushButton, QLineEdit, QMessageBox
-from .models import suppliers, Supplier
-from .storage import save_data
+from ....common.models import suppliers, Supplier
+from ....common.storage import save_data
 
 class SuppliersDialog(QDialog):
     def __init__(self, parent=None):

@@ -1,9 +1,9 @@
-PySide6==6.10.1
+PySide6
 
-# Data & analytics (STABLE Windows)
-pandas==2.1.4
-numpy==1.26.4
-matplotlib==3.8.0
+# Data & analytics
+pandas
+numpy
+matplotlib
 
 # Génération & médias
 python-barcode==0.15.1

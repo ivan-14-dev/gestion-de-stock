@@ -1,17 +1,17 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QPushButton, QLineEdit, QLabel, QComboBox, QTabWidget, QFileDialog, QMessageBox
 from PySide6.QtCore import Qt
-from .models import products, categories, suppliers
-from .storage import load_data, save_data, export_csv, import_csv
-from .add_product_dialog import AddProductDialog
+from ...common.models import products, categories, suppliers
+from ...common.storage import load_data, save_data, export_csv, import_csv
+from .dialogs.add_product_dialog import AddProductDialog
 from .dashboard_widget import DashboardWidget
-from .barcode_dialog import BarcodeDialog
-from .stock_adjustment_dialog import StockAdjustmentDialog
-from .product_details_dialog import ProductDetailsDialog
-from .settings_dialog import SettingsDialog
-from .categories_dialog import CategoriesDialog
-from .suppliers_dialog import SuppliersDialog
-from .alerts_dialog import AlertsDialog
-from .print_labels import print_labels
+from .dialogs.barcode_dialog import BarcodeDialog
+from .dialogs.stock_adjustment_dialog import StockAdjustmentDialog
+from .dialogs.product_details_dialog import ProductDetailsDialog
+from .dialogs.settings_dialog import SettingsDialog
+from .dialogs.categories_dialog import CategoriesDialog
+from .dialogs.suppliers_dialog import SuppliersDialog
+from .dialogs.alerts_dialog import AlertsDialog
+from ...common.utils.print_labels import print_labels
 import json
 
 class StockWidget(QWidget):

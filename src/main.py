@@ -1,8 +1,8 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import Qt, QTimer
-from .stock_widget import StockWidget
-from .storage import save_data
+from .modules.stock.stock_widget import StockWidget
+from .common.storage import save_data
 
 class Sidebar(QWidget):
     def __init__(self, parent=None):

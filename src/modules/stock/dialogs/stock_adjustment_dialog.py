@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox, QPushButton, QMessageBox
 from PySide6.QtCore import Qt
-from .models import products, movements, Movement
-from .storage import save_data
+from ....common.models import products, movements, Movement
+from ....common.storage import save_data
 from datetime import datetime
 
 class StockAdjustmentDialog(QDialog):

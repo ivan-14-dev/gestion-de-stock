@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox, QPushButton, QFileDialog, QMessageBox
 from PySide6.QtCore import Qt
-from .models import products, categories, suppliers, Product, Variant
-from .storage import save_data
+from ....common.models import products, categories, suppliers, Product, Variant
+from ....common.storage import save_data
+from datetime import datetime
 import uuid
 
 class AddProductDialog(QDialog):

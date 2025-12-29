@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QPushButton
 from PySide6.QtCore import Qt
-from .models import products, categories, suppliers, movements
+from ....common.models import products, categories, suppliers, movements
 
 class ProductDetailsDialog(QDialog):
     def __init__(self, product, parent=None):

@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QPushButton, QLineEdit, QMessageBox
-from .models import categories, Category
-from .storage import save_data
+from ....common.models import categories, Category
+from ....common.storage import save_data
 
 class CategoriesDialog(QDialog):
     def __init__(self, parent=None):
