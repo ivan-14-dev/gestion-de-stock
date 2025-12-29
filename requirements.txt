@@ -4,6 +4,7 @@ PySide6
 pandas
 numpy
 matplotlib
+plotly
 
 # Génération & médias
 python-barcode==0.15.1

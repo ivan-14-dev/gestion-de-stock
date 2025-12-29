@@ -1,46 +1,12 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGridLayout, QVBoxLayout as QVLayout
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
+from PySide6.QtWebEngineWidgets import QWebEngineView
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
+import pandas as pd
 from collections import defaultdict
 from ...common.models import products, categories, suppliers, movements
 
-# Apply very modern SaaS chart styling
-plt.style.use('seaborn-v0_8-whitegrid')
-plt.rcParams.update({
-    'figure.facecolor': '#F9FAFB',
-    'axes.facecolor': '#FFFFFF',
-    'axes.edgecolor': '#E5E7EB',
-    'axes.labelcolor': '#374151',
-    'text.color': '#111827',
-    'xtick.color': '#6B7280',
-    'ytick.color': '#6B7280',
-    'grid.color': '#F3F4F6',
-    'grid.alpha': 0.4,
-    'grid.linewidth': 0.8,
-    'lines.linewidth': 3,
-    'lines.markersize': 8,
-    'lines.marker': 'o',
-    'lines.markeredgecolor': '#2563EB',
-    'lines.markerfacecolor': '#FFFFFF',
-    'lines.markeredgewidth': 2.5,
-    'axes.prop_cycle': plt.cycler(color=['#2563EB', '#6B7280', '#22C55E', '#F59E0B', '#EF4444']),
-    'font.family': 'sans-serif',
-    'font.sans-serif': ['Inter', 'Roboto', 'DejaVu Sans'],
-    'font.size': 11,
-    'axes.titlesize': 14,
-    'axes.titleweight': '700',
-    'axes.labelsize': 11,
-    'xtick.labelsize': 10,
-    'ytick.labelsize': 10,
-    'legend.fontsize': 10,
-    'figure.titlesize': 16,
-    'figure.titleweight': '700',
-    'axes.spines.top': False,
-    'axes.spines.right': False,
-    'axes.spines.bottom': True,
-    'axes.spines.left': True,
-})
 
 class DashboardWidget(QWidget):
     def __init__(self):
@@ -92,61 +58,26 @@ class DashboardWidget(QWidget):
         charts_layout.setSpacing(30)  # Add space between charts
         layout.addLayout(charts_layout)
 
-        # Pie chart with toolbar
-        pie_layout = QVLayout()
-        self.pie_canvas = FigureCanvas(Figure())
-        pie_toolbar = NavigationToolbar(self.pie_canvas, self)
-        pie_layout.addWidget(self.pie_canvas)
-        pie_layout.addWidget(pie_toolbar)
-        charts_layout.addLayout(pie_layout, 0, 0)
+        self.pie_view = QWebEngineView()
+        charts_layout.addWidget(self.pie_view, 0, 0)
 
-        # Bar chart with toolbar
-        bar_layout = QVLayout()
-        self.bar_canvas = FigureCanvas(Figure())
-        bar_toolbar = NavigationToolbar(self.bar_canvas, self)
-        bar_layout.addWidget(self.bar_canvas)
-        bar_layout.addWidget(bar_toolbar)
-        charts_layout.addLayout(bar_layout, 0, 1)
+        self.bar_view = QWebEngineView()
+        charts_layout.addWidget(self.bar_view, 0, 1)
 
-        # Line chart with toolbar
-        line_layout = QVLayout()
-        self.line_canvas = FigureCanvas(Figure())
-        line_toolbar = NavigationToolbar(self.line_canvas, self)
-        line_layout.addWidget(self.line_canvas)
-        line_layout.addWidget(line_toolbar)
-        charts_layout.addLayout(line_layout, 1, 0)
+        self.line_view = QWebEngineView()
+        charts_layout.addWidget(self.line_view, 1, 0)
 
-        # Heatmap with toolbar
-        heatmap_layout = QVLayout()
-        self.heatmap_canvas = FigureCanvas(Figure())
-        heatmap_toolbar = NavigationToolbar(self.heatmap_canvas, self)
-        heatmap_layout.addWidget(self.heatmap_canvas)
-        heatmap_layout.addWidget(heatmap_toolbar)
-        charts_layout.addLayout(heatmap_layout, 1, 1)
+        self.heatmap_view = QWebEngineView()
+        charts_layout.addWidget(self.heatmap_view, 1, 1)
 
-        # Doughnut chart with toolbar
-        doughnut_layout = QVLayout()
-        self.doughnut_canvas = FigureCanvas(Figure())
-        doughnut_toolbar = NavigationToolbar(self.doughnut_canvas, self)
-        doughnut_layout.addWidget(self.doughnut_canvas)
-        doughnut_layout.addWidget(doughnut_toolbar)
-        charts_layout.addLayout(doughnut_layout, 2, 0)
+        self.doughnut_view = QWebEngineView()
+        charts_layout.addWidget(self.doughnut_view, 2, 0)
 
-        # Horizontal bar chart with toolbar
-        hbar_layout = QVLayout()
-        self.hbar_canvas = FigureCanvas(Figure())
-        hbar_toolbar = NavigationToolbar(self.hbar_canvas, self)
-        hbar_layout.addWidget(self.hbar_canvas)
-        hbar_layout.addWidget(hbar_toolbar)
-        charts_layout.addLayout(hbar_layout, 2, 1)
+        self.hbar_view = QWebEngineView()
+        charts_layout.addWidget(self.hbar_view, 2, 1)
 
-        # Timeline with toolbar
-        timeline_layout = QVLayout()
-        self.timeline_canvas = FigureCanvas(Figure())
-        timeline_toolbar = NavigationToolbar(self.timeline_canvas, self)
-        timeline_layout.addWidget(self.timeline_canvas)
-        timeline_layout.addWidget(timeline_toolbar)
-        charts_layout.addLayout(timeline_layout, 3, 0, 1, 2)
+        self.timeline_view = QWebEngineView()
+        charts_layout.addWidget(self.timeline_view, 3, 0, 1, 2)
 
         self.update_dashboard()
 
@@ -167,17 +98,13 @@ class DashboardWidget(QWidget):
             qty = sum(v.quantity for v in p.variants)
             cat_stock[cat_name] += qty
 
-        self.pie_canvas.figure.clear()
-        ax = self.pie_canvas.figure.add_subplot(111)
         if cat_stock:
             colors = ['#2563EB', '#6B7280', '#22C55E', '#F59E0B', '#EF4444'][:len(cat_stock)]
-            wedges, texts, autotexts = ax.pie(cat_stock.values(), labels=cat_stock.keys(), autopct='%1.1f%%', colors=colors, startangle=90, wedgeprops={'edgecolor': '#FFFFFF', 'linewidth': 2}, pctdistance=0.85)
-            # Style the percentage texts
-            for autotext in autotexts:
-                autotext.set_color('white')
-                autotext.set_fontweight('bold')
-        ax.set_title("Stock par catégorie", pad=20, fontweight='bold')
-        self.pie_canvas.draw()
+            fig = go.Figure(data=[go.Pie(labels=list(cat_stock.keys()), values=list(cat_stock.values()), marker_colors=colors, textinfo='label+percent', insidetextorientation='radial')])
+            fig.update_layout(title="Stock par catégorie", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF')
+            self.pie_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
+        else:
+            self.pie_view.setHtml("<p>No data</p>")
 
         # Bar chart: stock by color (top 10)
         color_stock = defaultdict(int)
@@ -188,15 +115,13 @@ class DashboardWidget(QWidget):
         top_colors = sorted(color_stock.items(), key=lambda x: x[1], reverse=True)[:10]
         colors, qtys = zip(*top_colors) if top_colors else ([], [])
 
-        self.bar_canvas.figure.clear()
-        ax = self.bar_canvas.figure.add_subplot(111)
-        bars = ax.bar(colors, qtys, color='#2563EB', edgecolor='#FFFFFF', linewidth=1, width=0.8)
-        ax.set_title("Stock par couleur (top 10)", pad=20, fontweight='bold')
-        ax.grid(True, axis='y', alpha=0.3)
-        # Add value labels on bars
-        for bar, qty in zip(bars, qtys):
-            ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + max(qtys)*0.01, str(qty), ha='center', va='bottom', fontweight='bold', fontsize=10)
-        self.bar_canvas.draw()
+        if colors:
+            fig = go.Figure(data=[go.Bar(x=list(colors), y=list(qtys), marker_color='#2563EB', marker_line_color='#FFFFFF', marker_line_width=1)])
+            fig.update_layout(title="Stock par couleur (top 10)", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Couleur", yaxis_title="Quantité")
+            fig.update_traces(text=list(qtys), textposition='outside')
+            self.bar_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
+        else:
+            self.bar_view.setHtml("<p>No data</p>")
 
         # Line chart: stock evolution (simplified, assume daily totals from movements)
         # For simplicity, plot cumulative
@@ -208,17 +133,15 @@ class DashboardWidget(QWidget):
                 current_total += m.quantity
             elif m.type == 'out':
                 current_total -= m.quantity
-            dates.append(m.date)
+            dates.append(str(m.date))
             totals.append(current_total)
 
-        self.line_canvas.figure.clear()
-        ax = self.line_canvas.figure.add_subplot(111)
         if dates:
-            ax.plot(dates, totals, marker='o', markersize=6, markerfacecolor='#FFFFFF', markeredgecolor='#2563EB', markeredgewidth=2, linewidth=2.5, color='#2563EB', label='Stock total')
-            ax.legend(loc='upper left', frameon=True, fancybox=True, shadow=True)
-        ax.set_title("Évolution stock", pad=20, fontweight='bold')
-        ax.grid(True, alpha=0.3)
-        self.line_canvas.draw()
+            fig = go.Figure(data=[go.Scatter(x=dates, y=totals, mode='lines+markers', marker=dict(size=8, color='#2563EB', line=dict(width=2, color='#FFFFFF')), line=dict(width=3, color='#2563EB'), name='Stock total')])
+            fig.update_layout(title="Évolution stock", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Date", yaxis_title="Quantité totale")
+            self.line_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
+        else:
+            self.line_view.setHtml("<p>No data</p>")
 
         # Heatmap: size vs color
         sizes = set()
@@ -239,17 +162,12 @@ class DashboardWidget(QWidget):
                     j = colors_list.index(v.color)
                     heatmap_data[i][j] += v.quantity
 
-        self.heatmap_canvas.figure.clear()
-        ax = self.heatmap_canvas.figure.add_subplot(111)
         if heatmap_data:
-            cax = ax.imshow(heatmap_data, cmap='RdYlGn_r', aspect='auto')
-            ax.set_xticks(range(len(colors_list)))
-            ax.set_xticklabels(colors_list)
-            ax.set_yticks(range(len(sizes)))
-            ax.set_yticklabels(sizes)
-            self.heatmap_canvas.figure.colorbar(cax)
-        ax.set_title("Heatmap taille/couleur", pad=20, fontweight='bold')
-        self.heatmap_canvas.draw()
+            fig = go.Figure(data=go.Heatmap(z=heatmap_data, x=colors_list, y=sizes, colorscale='RdYlGn_r'))
+            fig.update_layout(title="Heatmap taille/couleur", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Couleur", yaxis_title="Taille")
+            self.heatmap_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
+        else:
+            self.heatmap_view.setHtml("<p>No data</p>")
 
         # Doughnut chart: stock by supplier
         sup_stock = defaultdict(int)
@@ -258,20 +176,13 @@ class DashboardWidget(QWidget):
             qty = sum(v.quantity for v in p.variants)
             sup_stock[sup_name] += qty
 
-        self.doughnut_canvas.figure.clear()
-        ax = self.doughnut_canvas.figure.add_subplot(111)
         if sup_stock:
             colors = ['#2563EB', '#6B7280', '#22C55E', '#F59E0B', '#EF4444'][:len(sup_stock)]
-            wedges, texts, autotexts = ax.pie(sup_stock.values(), labels=sup_stock.keys(), autopct='%1.1f%%', colors=colors, pctdistance=0.85, startangle=90, wedgeprops={'edgecolor': '#FFFFFF', 'linewidth': 2})
-            centre_circle = plt.Circle((0,0),0.70,fc='#F9FAFB', edgecolor='#E5E7EB', linewidth=2)
-            ax.add_artist(centre_circle)
-            # Add center text
-            ax.text(0, 0, 'Fournisseurs', ha='center', va='center', fontsize=12, fontweight='bold', color='#374151')
-            for autotext in autotexts:
-                autotext.set_color('white')
-                autotext.set_fontweight('bold')
-        ax.set_title("Stock par fournisseur (doughnut)", pad=20, fontweight='bold')
-        self.doughnut_canvas.draw()
+            fig = go.Figure(data=[go.Pie(labels=list(sup_stock.keys()), values=list(sup_stock.values()), marker_colors=colors, textinfo='label+percent', hole=0.7)])
+            fig.update_layout(title="Stock par fournisseur (doughnut)", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', annotations=[dict(text='Fournisseurs', x=0.5, y=0.5, font_size=12, showarrow=False)])
+            self.doughnut_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
+        else:
+            self.doughnut_view.setHtml("<p>No data</p>")
 
         # Horizontal bar chart: top stocked products
         prod_stock = [(p.name, sum(v.quantity for v in p.variants)) for p in products]
@@ -279,26 +190,22 @@ class DashboardWidget(QWidget):
         top_prods = prod_stock[:10]
         names, qtys = zip(*top_prods) if top_prods else ([], [])
 
-        self.hbar_canvas.figure.clear()
-        ax = self.hbar_canvas.figure.add_subplot(111)
-        bars = ax.barh(names, qtys, color='#2563EB', edgecolor='#FFFFFF', linewidth=1, height=0.8)
-        ax.set_title("Top produits stockés", pad=20, fontweight='bold')
-        ax.grid(True, axis='x', alpha=0.3)
-        # Add value labels on bars
-        for bar, qty in zip(bars, qtys):
-            ax.text(bar.get_width() + max(qtys)*0.01, bar.get_y() + bar.get_height()/2, str(qty), ha='left', va='center', fontweight='bold', fontsize=10)
-        self.hbar_canvas.draw()
+        if names:
+            fig = go.Figure(data=[go.Bar(y=list(names), x=list(qtys), orientation='h', marker_color='#2563EB', marker_line_color='#FFFFFF', marker_line_width=1)])
+            fig.update_layout(title="Top produits stockés", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Quantité", yaxis_title="Produit")
+            fig.update_traces(text=list(qtys), textposition='outside')
+            self.hbar_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
+        else:
+            self.hbar_view.setHtml("<p>No data</p>")
 
         # Timeline: recent movements
         recent_movements = sorted(movements, key=lambda x: x.date, reverse=True)[:20]
-        dates = [m.date for m in reversed(recent_movements)]
-        types = [m.type for m in reversed(recent_movements)]
+        dates = [str(m.date) for m in reversed(recent_movements)]
         qtys = [m.quantity if m.type == 'in' else -m.quantity for m in reversed(recent_movements)]
 
-        self.timeline_canvas.figure.clear()
-        ax = self.timeline_canvas.figure.add_subplot(111)
-        ax.plot(dates, qtys, marker='o', markersize=6, markerfacecolor='#FFFFFF', markeredgecolor='#2563EB', markeredgewidth=2, linewidth=2.5, color='#2563EB', label='Mouvements')
-        ax.legend(loc='upper left', frameon=True, fancybox=True, shadow=True)
-        ax.set_title("Timeline mouvements récents", pad=20, fontweight='bold')
-        ax.grid(True, alpha=0.3)
-        self.timeline_canvas.draw()
+        if dates:
+            fig = go.Figure(data=[go.Scatter(x=dates, y=qtys, mode='lines+markers', marker=dict(size=8, color='#2563EB', line=dict(width=2, color='#FFFFFF')), line=dict(width=3, color='#2563EB'), name='Mouvements')])
+            fig.update_layout(title="Timeline mouvements récents", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Date", yaxis_title="Quantité")
+            self.timeline_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
+        else:
+            self.timeline_view.setHtml("<p>No data</p>")
