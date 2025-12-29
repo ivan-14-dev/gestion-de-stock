@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGridLayout
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 from collections import defaultdict
 from .models import products, categories, suppliers, movements
 
@@ -40,6 +41,15 @@ class DashboardWidget(QWidget):
 
         self.heatmap_canvas = FigureCanvas(Figure())
         charts_layout.addWidget(self.heatmap_canvas, 1, 1)
+
+        self.doughnut_canvas = FigureCanvas(Figure())
+        charts_layout.addWidget(self.doughnut_canvas, 2, 0)
+
+        self.hbar_canvas = FigureCanvas(Figure())
+        charts_layout.addWidget(self.hbar_canvas, 2, 1)
+
+        self.timeline_canvas = FigureCanvas(Figure())
+        charts_layout.addWidget(self.timeline_canvas, 3, 0, 1, 2)
 
         self.update_dashboard()
 
@@ -132,3 +142,43 @@ class DashboardWidget(QWidget):
             self.heatmap_canvas.figure.colorbar(cax)
         ax.set_title("Heatmap taille/couleur")
         self.heatmap_canvas.draw()
+
+        # Doughnut chart: stock by supplier
+        sup_stock = defaultdict(int)
+        for p in products:
+            sup_name = next((s.name for s in suppliers if s.id == p.supplier_id), "Autre")
+            qty = sum(v.quantity for v in p.variants)
+            sup_stock[sup_name] += qty
+
+        self.doughnut_canvas.figure.clear()
+        ax = self.doughnut_canvas.figure.add_subplot(111)
+        if sup_stock:
+            wedges, texts, autotexts = ax.pie(sup_stock.values(), labels=sup_stock.keys(), autopct='%1.1f%%', pctdistance=0.85)
+            centre_circle = plt.Circle((0,0),0.70,fc='white')
+            ax.add_artist(centre_circle)
+        ax.set_title("Stock par fournisseur (doughnut)")
+        self.doughnut_canvas.draw()
+
+        # Horizontal bar chart: top stocked products
+        prod_stock = [(p.name, sum(v.quantity for v in p.variants)) for p in products]
+        prod_stock.sort(key=lambda x: x[1], reverse=True)
+        top_prods = prod_stock[:10]
+        names, qtys = zip(*top_prods) if top_prods else ([], [])
+
+        self.hbar_canvas.figure.clear()
+        ax = self.hbar_canvas.figure.add_subplot(111)
+        ax.barh(names, qtys)
+        ax.set_title("Top produits stockés")
+        self.hbar_canvas.draw()
+
+        # Timeline: recent movements
+        recent_movements = sorted(movements, key=lambda x: x.date, reverse=True)[:20]
+        dates = [m.date for m in reversed(recent_movements)]
+        types = [m.type for m in reversed(recent_movements)]
+        qtys = [m.quantity if m.type == 'in' else -m.quantity for m in reversed(recent_movements)]
+
+        self.timeline_canvas.figure.clear()
+        ax = self.timeline_canvas.figure.add_subplot(111)
+        ax.plot(dates, qtys, marker='o')
+        ax.set_title("Timeline mouvements récents")
+        self.timeline_canvas.draw()
