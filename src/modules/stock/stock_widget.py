@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QPushButton, QLineEdit, QLabel, QComboBox, QTabWidget, QFileDialog, QMessageBox, QInputDialog
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QLineEdit, QLabel, QComboBox, QTabWidget, QFileDialog, QMessageBox, QInputDialog
+from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
 from ...common.models import products, categories, suppliers, Category, Supplier
 from ...common.storage import load_data, save_data, export_csv, import_csv
@@ -23,56 +24,56 @@ class StockWidget(QWidget):
         self.toolbar = QToolBar()
         self.layout.addWidget(self.toolbar)
 
-        self.add_btn = QPushButton("Ajouter Produit")
-        self.toolbar.addWidget(self.add_btn)
+        self.add_action = QAction("Ajouter Produit", self)
+        self.toolbar.addAction(self.add_action)
 
-        self.edit_btn = QPushButton("Modifier")
-        self.toolbar.addWidget(self.edit_btn)
+        self.edit_action = QAction("Modifier", self)
+        self.toolbar.addAction(self.edit_action)
 
-        self.delete_btn = QPushButton("Supprimer")
-        self.toolbar.addWidget(self.delete_btn)
+        self.delete_action = QAction("Supprimer", self)
+        self.toolbar.addAction(self.delete_action)
 
-        self.adjust_btn = QPushButton("Ajuster Stock")
-        self.toolbar.addWidget(self.adjust_btn)
+        self.adjust_action = QAction("Ajuster Stock", self)
+        self.toolbar.addAction(self.adjust_action)
 
-        self.details_btn = QPushButton("Voir Détails")
-        self.toolbar.addWidget(self.details_btn)
+        self.details_action = QAction("Voir Détails", self)
+        self.toolbar.addAction(self.details_action)
 
-        self.barcode_btn = QPushButton("Générer Code-Barres")
-        self.toolbar.addWidget(self.barcode_btn)
+        self.barcode_action = QAction("Générer Code-Barres", self)
+        self.toolbar.addAction(self.barcode_action)
 
-        self.settings_btn = QPushButton("Réglages Module")
-        self.toolbar.addWidget(self.settings_btn)
+        self.settings_action = QAction("Réglages Module", self)
+        self.toolbar.addAction(self.settings_action)
 
-        self.add_category_btn = QPushButton("Ajouter Catégorie")
-        self.toolbar.addWidget(self.add_category_btn)
+        self.add_category_action = QAction("Ajouter Catégorie", self)
+        self.toolbar.addAction(self.add_category_action)
 
-        self.add_supplier_btn = QPushButton("Ajouter Fournisseur")
-        self.toolbar.addWidget(self.add_supplier_btn)
+        self.add_supplier_action = QAction("Ajouter Fournisseur", self)
+        self.toolbar.addAction(self.add_supplier_action)
 
-        self.categories_btn = QPushButton("Gérer Catégories")
-        self.toolbar.addWidget(self.categories_btn)
+        self.categories_action = QAction("Gérer Catégories", self)
+        self.toolbar.addAction(self.categories_action)
 
-        self.suppliers_btn = QPushButton("Gérer Fournisseurs")
-        self.toolbar.addWidget(self.suppliers_btn)
+        self.suppliers_action = QAction("Gérer Fournisseurs", self)
+        self.toolbar.addAction(self.suppliers_action)
 
-        self.alerts_btn = QPushButton("Alertes Stock")
-        self.toolbar.addWidget(self.alerts_btn)
+        self.alerts_action = QAction("Alertes Stock", self)
+        self.toolbar.addAction(self.alerts_action)
 
-        self.print_btn = QPushButton("Imprimer Étiquettes")
-        self.toolbar.addWidget(self.print_btn)
+        self.print_action = QAction("Imprimer Étiquettes", self)
+        self.toolbar.addAction(self.print_action)
 
-        self.import_csv_btn = QPushButton("Importer CSV")
-        self.toolbar.addWidget(self.import_csv_btn)
+        self.import_csv_action = QAction("Importer CSV", self)
+        self.toolbar.addAction(self.import_csv_action)
 
-        self.export_json_btn = QPushButton("Exporter JSON")
-        self.toolbar.addWidget(self.export_json_btn)
+        self.export_json_action = QAction("Exporter JSON", self)
+        self.toolbar.addAction(self.export_json_action)
 
-        self.export_csv_btn = QPushButton("Exporter CSV")
-        self.toolbar.addWidget(self.export_csv_btn)
+        self.export_csv_action = QAction("Exporter CSV", self)
+        self.toolbar.addAction(self.export_csv_action)
 
-        self.refresh_btn = QPushButton("Rafraîchir")
-        self.toolbar.addWidget(self.refresh_btn)
+        self.refresh_action = QAction("Rafraîchir", self)
+        self.toolbar.addAction(self.refresh_action)
 
         # Tabs
         self.tabs = QTabWidget()
@@ -115,23 +116,23 @@ class StockWidget(QWidget):
         self.refresh_table()
 
         # Connect signals
-        self.add_btn.clicked.connect(self.add_product)
-        self.edit_btn.clicked.connect(self.edit_product)
-        self.delete_btn.clicked.connect(self.delete_product)
-        self.adjust_btn.clicked.connect(self.adjust_stock)
-        self.details_btn.clicked.connect(self.view_details)
-        self.barcode_btn.clicked.connect(self.generate_barcode)
-        self.settings_btn.clicked.connect(self.open_settings)
-        self.add_category_btn.clicked.connect(self.add_category)
-        self.add_supplier_btn.clicked.connect(self.add_supplier)
-        self.categories_btn.clicked.connect(self.manage_categories)
-        self.suppliers_btn.clicked.connect(self.manage_suppliers)
-        self.alerts_btn.clicked.connect(self.show_alerts)
-        self.print_btn.clicked.connect(self.print_labels)
-        self.import_csv_btn.clicked.connect(self.import_csv)
-        self.export_json_btn.clicked.connect(self.export_json)
-        self.export_csv_btn.clicked.connect(self.export_csv)
-        self.refresh_btn.clicked.connect(self.refresh_table)
+        self.add_action.triggered.connect(self.add_product)
+        self.edit_action.triggered.connect(self.edit_product)
+        self.delete_action.triggered.connect(self.delete_product)
+        self.adjust_action.triggered.connect(self.adjust_stock)
+        self.details_action.triggered.connect(self.view_details)
+        self.barcode_action.triggered.connect(self.generate_barcode)
+        self.settings_action.triggered.connect(self.open_settings)
+        self.add_category_action.triggered.connect(self.add_category)
+        self.add_supplier_action.triggered.connect(self.add_supplier)
+        self.categories_action.triggered.connect(self.manage_categories)
+        self.suppliers_action.triggered.connect(self.manage_suppliers)
+        self.alerts_action.triggered.connect(self.show_alerts)
+        self.print_action.triggered.connect(self.print_labels)
+        self.import_csv_action.triggered.connect(self.import_csv)
+        self.export_json_action.triggered.connect(self.export_json)
+        self.export_csv_action.triggered.connect(self.export_csv)
+        self.refresh_action.triggered.connect(self.refresh_table)
         self.search_input.textChanged.connect(self.filter_table)
         self.category_filter.currentIndexChanged.connect(self.filter_table)
         self.supplier_filter.currentIndexChanged.connect(self.filter_table)
