@@ -1,9 +1,10 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QPushButton, QLineEdit, QLabel, QComboBox, QTabWidget
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QPushButton, QLineEdit, QLabel, QComboBox, QTabWidget, QFileDialog, QMessageBox
 from PySide6.QtCore import Qt
 from .models import products, categories, suppliers
-from .storage import load_data, save_data
+from .storage import load_data, save_data, export_csv, import_csv
 from .add_product_dialog import AddProductDialog
 from .dashboard_widget import DashboardWidget
+import json
 
 class StockWidget(QWidget):
     def __init__(self):
@@ -71,6 +72,9 @@ class StockWidget(QWidget):
 
         # Connect signals
         self.add_btn.clicked.connect(self.add_product)
+        self.import_csv_btn.clicked.connect(self.import_csv)
+        self.export_json_btn.clicked.connect(self.export_json)
+        self.export_csv_btn.clicked.connect(self.export_csv)
         self.refresh_btn.clicked.connect(self.refresh_table)
         self.search_input.textChanged.connect(self.filter_table)
         self.category_filter.currentIndexChanged.connect(self.filter_table)
@@ -130,3 +134,40 @@ class StockWidget(QWidget):
         dialog = AddProductDialog(self)
         if dialog.exec():
             self.refresh_table()
+
+    def import_csv(self):
+        file, _ = QFileDialog.getOpenFileName(self, "Importer CSV", "", "CSV (*.csv)")
+        if file:
+            try:
+                import_csv(file, 'products')
+                load_data()
+                self.refresh_table()
+                QMessageBox.information(self, "Succès", "Import réussi")
+            except Exception as e:
+                QMessageBox.warning(self, "Erreur", f"Erreur lors de l'import: {str(e)}")
+
+    def export_json(self):
+        file, _ = QFileDialog.getSaveFileName(self, "Exporter JSON", "", "JSON (*.json)")
+        if file:
+            try:
+                with open(file, 'w') as f:
+                    data = []
+                    for p in products:
+                        d = p.__dict__.copy()
+                        d['created_at'] = d['created_at'].isoformat()
+                        d['updated_at'] = d['updated_at'].isoformat()
+                        d['variants'] = [v.__dict__ for v in d['variants']]
+                        data.append(d)
+                    json.dump(data, f, indent=4)
+                QMessageBox.information(self, "Succès", "Export réussi")
+            except Exception as e:
+                QMessageBox.warning(self, "Erreur", f"Erreur lors de l'export: {str(e)}")
+
+    def export_csv(self):
+        file, _ = QFileDialog.getSaveFileName(self, "Exporter CSV", "", "CSV (*.csv)")
+        if file:
+            try:
+                export_csv(file, 'products')
+                QMessageBox.information(self, "Succès", "Export réussi")
+            except Exception as e:
+                QMessageBox.warning(self, "Erreur", f"Erreur lors de l'export: {str(e)}")
