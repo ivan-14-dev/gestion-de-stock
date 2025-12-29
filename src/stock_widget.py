@@ -4,6 +4,7 @@ from .models import products, categories, suppliers
 from .storage import load_data, save_data, export_csv, import_csv
 from .add_product_dialog import AddProductDialog
 from .dashboard_widget import DashboardWidget
+from .barcode_dialog import BarcodeDialog
 import json
 
 class StockWidget(QWidget):
@@ -190,7 +191,14 @@ class StockWidget(QWidget):
         QMessageBox.information(self, "Info", "Détails produit - à implémenter")
 
     def generate_barcode(self):
-        QMessageBox.information(self, "Info", "Génération code-barres - à implémenter")
+        selected = self.table.selectedItems()
+        if not selected:
+            QMessageBox.warning(self, "Erreur", "Sélectionnez un produit")
+            return
+        row = selected[0].row()
+        ref = self.table.item(row, 0).text()
+        dialog = BarcodeDialog(ref, self)
+        dialog.exec()
 
     def import_csv(self):
         file, _ = QFileDialog.getOpenFileName(self, "Importer CSV", "", "CSV (*.csv)")
