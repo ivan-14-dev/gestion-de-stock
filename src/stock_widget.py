@@ -5,6 +5,7 @@ from .storage import load_data, save_data, export_csv, import_csv
 from .add_product_dialog import AddProductDialog
 from .dashboard_widget import DashboardWidget
 from .barcode_dialog import BarcodeDialog
+from .stock_adjustment_dialog import StockAdjustmentDialog
 import json
 
 class StockWidget(QWidget):
@@ -185,7 +186,9 @@ class StockWidget(QWidget):
                 self.refresh_table()
 
     def adjust_stock(self):
-        QMessageBox.information(self, "Info", "Ajustement stock - à implémenter")
+        dialog = StockAdjustmentDialog(self)
+        if dialog.exec():
+            self.refresh_table()
 
     def view_details(self):
         QMessageBox.information(self, "Info", "Détails produit - à implémenter")
