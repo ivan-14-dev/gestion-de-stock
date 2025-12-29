@@ -1,8 +1,9 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QPushButton, QLineEdit, QLabel, QComboBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QPushButton, QLineEdit, QLabel, QComboBox, QTabWidget
 from PySide6.QtCore import Qt
 from .models import products, categories, suppliers
 from .storage import load_data, save_data
 from .add_product_dialog import AddProductDialog
+from .dashboard_widget import DashboardWidget
 
 class StockWidget(QWidget):
     def __init__(self):
@@ -28,9 +29,17 @@ class StockWidget(QWidget):
         self.refresh_btn = QPushButton("Rafraîchir")
         self.toolbar.addWidget(self.refresh_btn)
 
+        # Tabs
+        self.tabs = QTabWidget()
+        self.layout.addWidget(self.tabs)
+
+        # Table tab
+        self.table_tab = QWidget()
+        table_layout = QVBoxLayout(self.table_tab)
+
         # Search and filters
         self.search_layout = QHBoxLayout()
-        self.layout.addLayout(self.search_layout)
+        table_layout.addLayout(self.search_layout)
 
         self.search_input = QLineEdit()
         self.search_input.setPlaceholderText("Rechercher...")
@@ -46,9 +55,15 @@ class StockWidget(QWidget):
 
         # Table
         self.table = QTableWidget()
-        self.layout.addWidget(self.table)
+        table_layout.addWidget(self.table)
         self.table.setColumnCount(8)
         self.table.setHorizontalHeaderLabels(["Référence", "Nom", "Catégorie", "Fournisseur", "Prix", "Quantité Totale", "Variants", "Actions"])
+
+        self.tabs.addTab(self.table_tab, "Table")
+
+        # Dashboard tab
+        self.dashboard_tab = DashboardWidget()
+        self.tabs.addTab(self.dashboard_tab, "Dashboard")
 
         # Load data
         load_data()
@@ -89,6 +104,9 @@ class StockWidget(QWidget):
         self.supplier_filter.addItem("Tous fournisseurs")
         for sup in suppliers:
             self.supplier_filter.addItem(sup.name)
+
+        # Update dashboard
+        self.dashboard_tab.update_dashboard()
 
     def filter_table(self):
         search_text = self.search_input.text().lower()
