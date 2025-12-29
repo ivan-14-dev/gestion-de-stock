@@ -101,7 +101,7 @@ class DashboardWidget(QWidget):
         if cat_stock:
             colors = ['#2563EB', '#6B7280', '#22C55E', '#F59E0B', '#EF4444'][:len(cat_stock)]
             fig = go.Figure(data=[go.Pie(labels=list(cat_stock.keys()), values=list(cat_stock.values()), marker_colors=colors, textinfo='label+percent', insidetextorientation='radial')])
-            fig.update_layout(title="Stock par catégorie", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF')
+            fig.update_layout(title="Stock par catégorie", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', showlegend=True)
             self.pie_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
         else:
             self.pie_view.setHtml("<p>No data</p>")
@@ -116,8 +116,8 @@ class DashboardWidget(QWidget):
         colors, qtys = zip(*top_colors) if top_colors else ([], [])
 
         if colors:
-            fig = go.Figure(data=[go.Bar(x=list(colors), y=list(qtys), marker_color='#2563EB', marker_line_color='#FFFFFF', marker_line_width=1)])
-            fig.update_layout(title="Stock par couleur (top 10)", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Couleur", yaxis_title="Quantité")
+            fig = go.Figure(data=[go.Bar(x=list(colors), y=list(qtys), marker_color='#2563EB', marker_line_color='#FFFFFF', marker_line_width=1, name='Quantité par couleur')])
+            fig.update_layout(title="Stock par couleur (top 10)", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Couleur", yaxis_title="Quantité", showlegend=True)
             fig.update_traces(text=list(qtys), textposition='outside')
             self.bar_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
         else:
@@ -138,7 +138,7 @@ class DashboardWidget(QWidget):
 
         if dates:
             fig = go.Figure(data=[go.Scatter(x=dates, y=totals, mode='lines+markers', marker=dict(size=8, color='#2563EB', line=dict(width=2, color='#FFFFFF')), line=dict(width=3, color='#2563EB'), name='Stock total')])
-            fig.update_layout(title="Évolution stock", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Date", yaxis_title="Quantité totale")
+            fig.update_layout(title="Évolution stock", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Date", yaxis_title="Quantité totale", showlegend=True)
             self.line_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
         else:
             self.line_view.setHtml("<p>No data</p>")
@@ -163,8 +163,8 @@ class DashboardWidget(QWidget):
                     heatmap_data[i][j] += v.quantity
 
         if heatmap_data:
-            fig = go.Figure(data=go.Heatmap(z=heatmap_data, x=colors_list, y=sizes, colorscale='RdYlGn_r'))
-            fig.update_layout(title="Heatmap taille/couleur", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Couleur", yaxis_title="Taille")
+            fig = go.Figure(data=go.Heatmap(z=heatmap_data, x=colors_list, y=sizes, colorscale='RdYlGn_r', name='Quantité'))
+            fig.update_layout(title="Heatmap taille/couleur", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Couleur", yaxis_title="Taille", showlegend=True)
             self.heatmap_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
         else:
             self.heatmap_view.setHtml("<p>No data</p>")
@@ -179,7 +179,7 @@ class DashboardWidget(QWidget):
         if sup_stock:
             colors = ['#2563EB', '#6B7280', '#22C55E', '#F59E0B', '#EF4444'][:len(sup_stock)]
             fig = go.Figure(data=[go.Pie(labels=list(sup_stock.keys()), values=list(sup_stock.values()), marker_colors=colors, textinfo='label+percent', hole=0.7)])
-            fig.update_layout(title="Stock par fournisseur (doughnut)", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', annotations=[dict(text='Fournisseurs', x=0.5, y=0.5, font_size=12, showarrow=False)])
+            fig.update_layout(title="Stock par fournisseur (doughnut)", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', annotations=[dict(text='Fournisseurs', x=0.5, y=0.5, font_size=12, showarrow=False)], showlegend=True)
             self.doughnut_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
         else:
             self.doughnut_view.setHtml("<p>No data</p>")
@@ -191,8 +191,8 @@ class DashboardWidget(QWidget):
         names, qtys = zip(*top_prods) if top_prods else ([], [])
 
         if names:
-            fig = go.Figure(data=[go.Bar(y=list(names), x=list(qtys), orientation='h', marker_color='#2563EB', marker_line_color='#FFFFFF', marker_line_width=1)])
-            fig.update_layout(title="Top produits stockés", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Quantité", yaxis_title="Produit")
+            fig = go.Figure(data=[go.Bar(y=list(names), x=list(qtys), orientation='h', marker_color='#2563EB', marker_line_color='#FFFFFF', marker_line_width=1, name='Quantité par produit')])
+            fig.update_layout(title="Top produits stockés", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Quantité", yaxis_title="Produit", showlegend=True)
             fig.update_traces(text=list(qtys), textposition='outside')
             self.hbar_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
         else:
@@ -205,7 +205,7 @@ class DashboardWidget(QWidget):
 
         if dates:
             fig = go.Figure(data=[go.Scatter(x=dates, y=qtys, mode='lines+markers', marker=dict(size=8, color='#2563EB', line=dict(width=2, color='#FFFFFF')), line=dict(width=3, color='#2563EB'), name='Mouvements')])
-            fig.update_layout(title="Timeline mouvements récents", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Date", yaxis_title="Quantité")
+            fig.update_layout(title="Timeline mouvements récents", title_font=dict(size=16, family='Inter', color='#111827'), paper_bgcolor='#F9FAFB', plot_bgcolor='#FFFFFF', xaxis_title="Date", yaxis_title="Quantité", showlegend=True)
             self.timeline_view.setHtml(fig.to_html(include_plotlyjs='cdn', full_html=False))
         else:
             self.timeline_view.setHtml("<p>No data</p>")
